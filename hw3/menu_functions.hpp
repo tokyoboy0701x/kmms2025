@@ -7,8 +7,19 @@ namespace ordo {
 
     const menu_item* exit(const menu_item* current);
 
-    const menu_item* menu_start_sorting(const menu_item* current);
-    const menu_item* menu_start_testing(const menu_item* current);
+    const menu_item* go_back(const menu_item* current);
+
     const menu_item* menu_settings(const menu_item* current);
-    const menu_item* menu_go_back(const menu_item* current);
+
+    const menu_item* sortings_quicksort(const menu_item* current);
+    const menu_item* sortings_merge_sort(const menu_item* current);
+    const menu_item* sortings_heap_sort(const menu_item* current);
+    const menu_item* sortings_radix_sort(const menu_item* current);
+    const menu_item* sortings_counting_sort(const menu_item* current);
+
+    const menu_item* testing_quicksort(const menu_item* current);
+    const menu_item* testing_merge_sort(const menu_item* current);
+    const menu_item* testing_heap_sort(const menu_item* current);
+    const menu_item* testing_radix_sort(const menu_item* current);
+    const menu_item* testing_counting_sort(const menu_item* current);
 }
