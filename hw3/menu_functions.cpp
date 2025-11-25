@@ -42,70 +42,70 @@ const ordo::menu_item* ordo::menu_settings(const ordo::menu_item* current) {
 const ordo::menu_item* ordo::sortings_quicksort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::sortings_merge_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::sortings_heap_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::sortings_radix_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::sortings_counting_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ВЫПОЛНЕНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::testing_quicksort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::testing_merge_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::testing_heap_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::testing_radix_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
 const ordo::menu_item* ordo::testing_counting_sort(const ordo::menu_item* current) {
     std::cout << current->title << std::endl;
     //todo
-    std::cout << "*ИММИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
+    std::cout << "*ИМИТАЦИЯ ТЕСТИРОВАНИЯ СОРТИРОВКИ*" << std::endl;
     return current->parent;
 }
 
