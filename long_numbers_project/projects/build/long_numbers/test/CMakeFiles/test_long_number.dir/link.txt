@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/test_long_number.dir/link.d CMakeFiles/test_long_number.dir/test_long_number.cpp.o -o test_long_number  ../libsort_lib.a /usr/lib64/libgtest.so.1.15.2

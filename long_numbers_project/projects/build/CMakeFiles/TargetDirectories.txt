@@ -1,0 +1,14 @@
+/home/equaer/spbu/prog/long_numbers_project/projects/build/CMakeFiles/test.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/CMakeFiles/edit_cache.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/CMakeFiles/rebuild_cache.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/CMakeFiles/sort_lib.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/CMakeFiles/test.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/CMakeFiles/edit_cache.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/CMakeFiles/rebuild_cache.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/src/CMakeFiles/test.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/src/CMakeFiles/edit_cache.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/src/CMakeFiles/rebuild_cache.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/test/CMakeFiles/test_long_number.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/test/CMakeFiles/test.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/test/CMakeFiles/edit_cache.dir
+/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/test/CMakeFiles/rebuild_cache.dir

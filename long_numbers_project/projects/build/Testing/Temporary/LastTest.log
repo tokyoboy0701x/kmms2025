@@ -1,0 +1,38 @@
+Start testing: Mar 06 22:15 MSK
+----------------------------------------------------------
+1/1 Testing: test_long_number
+1/1 Test: test_long_number
+Command: "/home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/test/test_long_number"
+Directory: /home/equaer/spbu/prog/long_numbers_project/projects/build/long_numbers/test
+"test_long_number" start time: Mar 06 22:15 MSK
+Output:
+----------------------------------------------------------
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 6 tests from LongNumberArithmeticTest
+[ RUN      ] LongNumberArithmeticTest.Addition
+[       OK ] LongNumberArithmeticTest.Addition (0 ms)
+[ RUN      ] LongNumberArithmeticTest.Subtraction
+[       OK ] LongNumberArithmeticTest.Subtraction (0 ms)
+[ RUN      ] LongNumberArithmeticTest.Multiplication
+[       OK ] LongNumberArithmeticTest.Multiplication (0 ms)
+[ RUN      ] LongNumberArithmeticTest.Division
+[       OK ] LongNumberArithmeticTest.Division (0 ms)
+[ RUN      ] LongNumberArithmeticTest.Modulus
+[       OK ] LongNumberArithmeticTest.Modulus (0 ms)
+[ RUN      ] LongNumberArithmeticTest.Comparison
+[       OK ] LongNumberArithmeticTest.Comparison (0 ms)
+[----------] 6 tests from LongNumberArithmeticTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 6 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 6 tests.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"test_long_number" end time: Mar 06 22:15 MSK
+"test_long_number" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Mar 06 22:15 MSK

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsort_lib.a CMakeFiles/sort_lib.dir/src/long_number.cpp.o
+/usr/bin/ranlib libsort_lib.a
