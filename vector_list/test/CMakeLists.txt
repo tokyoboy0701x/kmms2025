@@ -1,0 +1,19 @@
+add_executable(doubly_linked_list_tests test_doubly_linked_list.cpp templates_doubly_linked_list.cpp)
+target_link_libraries(doubly_linked_list_tests 
+	gtest 
+	${CONTAINERS_LIB}
+)
+target_include_directories(doubly_linked_list_tests PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+add_test(doubly_linked_list_tests doubly_linked_list_tests)
+
+add_executable(vector_tests test_vector.cpp templates_vector.cpp)
+target_link_libraries(vector_tests 
+	gtest 
+	${CONTAINERS_LIB}
+)
+target_include_directories(vector_tests PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+add_test(vector_tests vector_tests)
