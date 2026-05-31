@@ -1,9 +1,7 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-#define HORIZ_SPEED  0.2f
-#define GRAVITY      0.05f
-#define COIN_SPEED  -0.7f
+#include "constants.hpp"
 
 class Object {
 public:
