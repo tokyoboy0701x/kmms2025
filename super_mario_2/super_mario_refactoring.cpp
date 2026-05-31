@@ -76,8 +76,8 @@ void poll_keys() {
     while ((c = get_key()) != -1) {
         if (c == 27)              key_esc   = true;
         if (c == ' ')             key_space = true;
-        if (c == 'a' || c == 'A') key_a    = true;
-        if (c == 'd' || c == 'D') key_d    = true;
+        if (c == 'a' || c == 'A') key_a     = true;
+        if (c == 'd' || c == 'D') key_d     = true;
     }
 }
 
@@ -112,8 +112,8 @@ void set_object_pos(Object *obj, float x, float y) {
 void init_object(Object *obj, float x, float y,
                  float width, float height, char type) {
     set_object_pos(obj, x, y);
-    obj->width      = width;
-    obj->height     = height;
+    obj->width       = width;
+    obj->height      = height;
     obj->vert_speed  = 0;
     obj->horiz_speed = HORIZ_SPEED;
     obj->is_fly      = false;
@@ -130,8 +130,8 @@ bool is_pos_in_map(int x, int y) {
 }
 
 void put_object_on_map(Object obj) {
-    int ix      = (int)round(obj.x);
-    int iy      = (int)round(obj.y);
+    int ix       = (int)round(obj.x);
+    int iy       = (int)round(obj.y);
     int i_width  = (int)round(obj.width);
     int i_height = (int)round(obj.height);
     for (int i = ix; i < ix + i_width; i++)
@@ -173,6 +173,48 @@ void player_dead() {
     create_level(level);
 }
 
+void handle_portal() {
+    level++;
+    if (level > max_level) level = 1;
+    sleep_ms(LEVEL_DELAY);
+    create_level(level);
+}
+
+void apply_gravity(Object *obj) {
+    obj->is_fly = true;
+    obj->vert_speed += GRAVITY;
+    set_object_pos(obj, obj->x, obj->y + obj->vert_speed);
+}
+
+void check_brick_collision(Object *obj) {
+    for (int i = 0; i < brick_count; i++) {
+        if (!is_collision(*obj, brick[i]))
+            continue;
+
+        if (obj->vert_speed > 0)
+            obj->is_fly = false;
+
+        if (brick[i].type == '?' && obj->vert_speed < 0 && obj == &mario) {
+            brick[i].type = '-';
+            init_object(get_new_moving(), brick[i].x, brick[i].y - 3, 3, 2, '$');
+            moving[moving_count - 1].vert_speed = COIN_SPEED;
+        }
+
+        obj->y -= obj->vert_speed;
+        obj->vert_speed = 0;
+
+        if (brick[i].type == '+')
+            handle_portal();
+
+        break;
+    }
+}
+
+void vert_move_object(Object *obj) {
+    apply_gravity(obj);
+    check_brick_collision(obj);
+}
+
 void mario_collision() {
     for (int i = 0; i < moving_count; i++) {
         if (!is_collision(mario, moving[i]))
@@ -195,37 +237,6 @@ void mario_collision() {
             i--;
             continue;
         }
-    }
-}
-
-void vert_move_object(Object *obj) {
-    obj->is_fly = true;
-    obj->vert_speed += GRAVITY;
-    set_object_pos(obj, obj->x, obj->y + obj->vert_speed);
-
-    for (int i = 0; i < brick_count; i++) {
-        if (!is_collision(*obj, brick[i]))
-            continue;
-
-        if (obj->vert_speed > 0)
-            obj->is_fly = false;
-
-        if (brick[i].type == '?' && obj->vert_speed < 0 && obj == &mario) {
-            brick[i].type = '-';
-            init_object(get_new_moving(), brick[i].x, brick[i].y - 3, 3, 2, '$');
-            moving[moving_count - 1].vert_speed = COIN_SPEED;
-        }
-
-        obj->y -= obj->vert_speed;
-        obj->vert_speed = 0;
-
-        if (brick[i].type == '+') {
-            level++;
-            if (level > max_level) level = 1;
-            sleep_ms(LEVEL_DELAY);
-            create_level(level);
-        }
-        break;
     }
 }
 
