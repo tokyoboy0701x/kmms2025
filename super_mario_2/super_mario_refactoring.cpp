@@ -27,15 +27,21 @@ typedef struct {
     char  type;
 } Object;
 
-char   map[mapHeight][mapWidth + 1];
-Object mario;
-Object *brick  = NULL;
-int    brick_count;
-Object *moving = NULL;
-int    moving_count;
-int    level     = 1;
-int    score     = 0;
-int    max_level = 3;
+typedef struct {
+    char   map[mapHeight][mapWidth + 1];
+    Object mario;
+    Object *brick;
+    int    brick_count;
+    Object *moving;
+    int    moving_count;
+    int    level;
+    int    score;
+    int    max_level;
+    bool   key_a;
+    bool   key_d;
+    bool   key_space;
+    bool   key_esc;
+} GameState;
 
 static struct termios orig_termios;
 
@@ -63,21 +69,16 @@ int get_key() {
     return -1;
 }
 
-static bool key_a     = false;
-static bool key_d     = false;
-static bool key_space = false;
-static bool key_esc   = false;
-
-void poll_keys() {
-    key_space = false;
-    key_esc   = false;
+void poll_keys(GameState *state) {
+    state->key_space = false;
+    state->key_esc   = false;
 
     int c;
     while ((c = get_key()) != -1) {
-        if (c == 27)              key_esc   = true;
-        if (c == ' ')             key_space = true;
-        if (c == 'a' || c == 'A') key_a     = true;
-        if (c == 'd' || c == 'D') key_d     = true;
+        if (c == 27)              state->key_esc   = true;
+        if (c == ' ')             state->key_space = true;
+        if (c == 'a' || c == 'A') state->key_a     = true;
+        if (c == 'd' || c == 'D') state->key_d     = true;
     }
 }
 
@@ -89,18 +90,18 @@ void sleep_ms(int ms) {
     usleep(ms * 1000);
 }
 
-void clear_map() {
+void clear_map(GameState *state) {
     for (int i = 0; i < mapWidth; i++)
-        map[0][i] = ' ';
-    map[0][mapWidth] = '\0';
+        state->map[0][i] = ' ';
+    state->map[0][mapWidth] = '\0';
     for (int j = 1; j < mapHeight; j++)
-        sprintf(map[j], "%s", map[0]);
+        sprintf(state->map[j], "%s", state->map[0]);
 }
 
-void show_map() {
+void show_map(GameState *state) {
     for (int j = 0; j < mapHeight; j++) {
-        map[j][mapWidth] = '\0';
-        printf("%s\n", map[j]);
+        state->map[j][mapWidth] = '\0';
+        printf("%s\n", state->map[j]);
     }
 }
 
@@ -129,7 +130,7 @@ bool is_pos_in_map(int x, int y) {
     return (x >= 0) && (x < mapWidth) && (y >= 0) && (y < mapHeight);
 }
 
-void put_object_on_map(Object obj) {
+void put_object_on_map(GameState *state, Object obj) {
     int ix       = (int)round(obj.x);
     int iy       = (int)round(obj.y);
     int i_width  = (int)round(obj.width);
@@ -137,47 +138,47 @@ void put_object_on_map(Object obj) {
     for (int i = ix; i < ix + i_width; i++)
         for (int j = iy; j < iy + i_height; j++)
             if (is_pos_in_map(i, j))
-                map[j][i] = obj.type;
+                state->map[j][i] = obj.type;
 }
 
-void put_score_on_map() {
+void put_score_on_map(GameState *state) {
     char c[30];
-    sprintf(c, "Score: %d", score);
+    sprintf(c, "Score: %d", state->score);
     int len = strlen(c);
     for (int i = 0; i < len; i++)
-        map[1][i + 5] = c[i];
+        state->map[1][i + 5] = c[i];
 }
 
-Object *get_new_brick() {
-    brick_count++;
-    brick = (Object*)realloc(brick, sizeof(*brick) * brick_count);
-    return brick + brick_count - 1;
+Object *get_new_brick(GameState *state) {
+    state->brick_count++;
+    state->brick = (Object*)realloc(state->brick, sizeof(*state->brick) * state->brick_count);
+    return state->brick + state->brick_count - 1;
 }
 
-Object *get_new_moving() {
-    moving_count++;
-    moving = (Object*)realloc(moving, sizeof(*moving) * moving_count);
-    return moving + moving_count - 1;
+Object *get_new_moving(GameState *state) {
+    state->moving_count++;
+    state->moving = (Object*)realloc(state->moving, sizeof(*state->moving) * state->moving_count);
+    return state->moving + state->moving_count - 1;
 }
 
-void delete_moving(int i) {
-    moving_count--;
-    moving[i] = moving[moving_count];
-    moving = (Object*)realloc(moving, sizeof(*moving) * moving_count);
+void delete_moving(GameState *state, int i) {
+    state->moving_count--;
+    state->moving[i] = state->moving[state->moving_count];
+    state->moving = (Object*)realloc(state->moving, sizeof(*state->moving) * state->moving_count);
 }
 
-void create_level(int lvl);
+void create_level(GameState *state, int lvl);
 
-void player_dead() {
+void player_dead(GameState *state) {
     sleep_ms(DEAD_DELAY);
-    create_level(level);
+    create_level(state, state->level);
 }
 
-void handle_portal() {
-    level++;
-    if (level > max_level) level = 1;
+void handle_portal(GameState *state) {
+    state->level++;
+    if (state->level > state->max_level) state->level = 1;
     sleep_ms(LEVEL_DELAY);
-    create_level(level);
+    create_level(state, state->level);
 }
 
 void apply_gravity(Object *obj) {
@@ -186,64 +187,64 @@ void apply_gravity(Object *obj) {
     set_object_pos(obj, obj->x, obj->y + obj->vert_speed);
 }
 
-void check_brick_collision(Object *obj) {
-    for (int i = 0; i < brick_count; i++) {
-        if (!is_collision(*obj, brick[i]))
+void check_brick_collision(GameState *state, Object *obj) {
+    for (int i = 0; i < state->brick_count; i++) {
+        if (!is_collision(*obj, state->brick[i]))
             continue;
 
         if (obj->vert_speed > 0)
             obj->is_fly = false;
 
-        if (brick[i].type == '?' && obj->vert_speed < 0 && obj == &mario) {
-            brick[i].type = '-';
-            init_object(get_new_moving(), brick[i].x, brick[i].y - 3, 3, 2, '$');
-            moving[moving_count - 1].vert_speed = COIN_SPEED;
+        if (state->brick[i].type == '?' && obj->vert_speed < 0 && obj == &state->mario) {
+            state->brick[i].type = '-';
+            init_object(get_new_moving(state), state->brick[i].x, state->brick[i].y - 3, 3, 2, '$');
+            state->moving[state->moving_count - 1].vert_speed = COIN_SPEED;
         }
 
         obj->y -= obj->vert_speed;
         obj->vert_speed = 0;
 
-        if (brick[i].type == '+')
-            handle_portal();
+        if (state->brick[i].type == '+')
+            handle_portal(state);
 
         break;
     }
 }
 
-void vert_move_object(Object *obj) {
+void vert_move_object(GameState *state, Object *obj) {
     apply_gravity(obj);
-    check_brick_collision(obj);
+    check_brick_collision(state, obj);
 }
 
-void mario_collision() {
-    for (int i = 0; i < moving_count; i++) {
-        if (!is_collision(mario, moving[i]))
+void mario_collision(GameState *state) {
+    for (int i = 0; i < state->moving_count; i++) {
+        if (!is_collision(state->mario, state->moving[i]))
             continue;
 
-        if (moving[i].type == 'o') {
-            if (mario.is_fly && mario.vert_speed > 0 &&
-                mario.y + mario.height < moving[i].y + moving[i].height * 0.5f) {
-                score += SCORE_ENEMY;
-                delete_moving(i);
+        if (state->moving[i].type == 'o') {
+            if (state->mario.is_fly && state->mario.vert_speed > 0 &&
+                state->mario.y + state->mario.height < state->moving[i].y + state->moving[i].height * 0.5f) {
+                state->score += SCORE_ENEMY;
+                delete_moving(state, i);
                 i--;
                 continue;
             } else {
-                player_dead();
+                player_dead(state);
             }
         }
-        if (moving[i].type == '$') {
-            score += SCORE_COIN;
-            delete_moving(i);
+        if (state->moving[i].type == '$') {
+            state->score += SCORE_COIN;
+            delete_moving(state, i);
             i--;
             continue;
         }
     }
 }
 
-void horizon_move_object(Object *obj) {
+void horizon_move_object(GameState *state, Object *obj) {
     obj->x += obj->horiz_speed;
-    for (int i = 0; i < brick_count; i++) {
-        if (is_collision(*obj, brick[i])) {
+    for (int i = 0; i < state->brick_count; i++) {
+        if (is_collision(*obj, state->brick[i])) {
             obj->x -= obj->horiz_speed;
             obj->horiz_speed = -obj->horiz_speed;
             return;
@@ -251,7 +252,7 @@ void horizon_move_object(Object *obj) {
     }
     if (obj->type == 'o') {
         Object tmp = *obj;
-        vert_move_object(&tmp);
+        vert_move_object(state, &tmp);
         if (tmp.is_fly == true) {
             obj->x -= obj->horiz_speed;
             obj->horiz_speed = -obj->horiz_speed;
@@ -259,125 +260,129 @@ void horizon_move_object(Object *obj) {
     }
 }
 
-void horizon_move_map(float dx) {
-    mario.x -= dx;
-    for (int i = 0; i < brick_count; i++)
-        if (is_collision(mario, brick[i])) {
-            mario.x += dx;
+void horizon_move_map(GameState *state, float dx) {
+    state->mario.x -= dx;
+    for (int i = 0; i < state->brick_count; i++)
+        if (is_collision(state->mario, state->brick[i])) {
+            state->mario.x += dx;
             return;
         }
-    mario.x += dx;
-    for (int i = 0; i < brick_count; i++)
-        brick[i].x += dx;
-    for (int i = 0; i < moving_count; i++)
-        moving[i].x += dx;
+    state->mario.x += dx;
+    for (int i = 0; i < state->brick_count; i++)
+        state->brick[i].x += dx;
+    for (int i = 0; i < state->moving_count; i++)
+        state->moving[i].x += dx;
 }
 
-void create_level(int lvl) {
-    brick_count  = 0;
-    brick  = (Object*)realloc(brick,  0);
-    moving_count = 0;
-    moving = (Object*)realloc(moving, 0);
-    score  = 0;
-    init_object(&mario, 39, 10, 3, 3, '@');
+void create_level(GameState *state, int lvl) {
+    state->brick_count  = 0;
+    state->brick  = (Object*)realloc(state->brick,  0);
+    state->moving_count = 0;
+    state->moving = (Object*)realloc(state->moving, 0);
+    state->score  = 0;
+    init_object(&state->mario, 39, 10, 3, 3, '@');
 
     if (lvl == 1) {
-        init_object(get_new_brick(),  20, 20, 40,  5, '#');
-        init_object(get_new_brick(),  30, 10,  5,  3, '?');
-        init_object(get_new_brick(),  50, 10,  5,  3, '?');
-        init_object(get_new_brick(),  60, 15, 40, 10, '#');
-        init_object(get_new_brick(),  60,  5, 10,  3, '-');
-        init_object(get_new_brick(),  70,  5,  5,  3, '?');
-        init_object(get_new_brick(),  75,  5,  5,  3, '-');
-        init_object(get_new_brick(),  80,  5,  5,  3, '?');
-        init_object(get_new_brick(),  85,  5, 10,  3, '?');
-        init_object(get_new_brick(), 100, 20, 20,  5, '#');
-        init_object(get_new_brick(), 120, 15, 10, 10, '#');
-        init_object(get_new_brick(), 150, 20, 40,  5, '#');
-        init_object(get_new_brick(), 210, 15, 10, 10, '+');
+        init_object(get_new_brick(state),  20, 20, 40,  5, '#');
+        init_object(get_new_brick(state),  30, 10,  5,  3, '?');
+        init_object(get_new_brick(state),  50, 10,  5,  3, '?');
+        init_object(get_new_brick(state),  60, 15, 40, 10, '#');
+        init_object(get_new_brick(state),  60,  5, 10,  3, '-');
+        init_object(get_new_brick(state),  70,  5,  5,  3, '?');
+        init_object(get_new_brick(state),  75,  5,  5,  3, '-');
+        init_object(get_new_brick(state),  80,  5,  5,  3, '?');
+        init_object(get_new_brick(state),  85,  5, 10,  3, '?');
+        init_object(get_new_brick(state), 100, 20, 20,  5, '#');
+        init_object(get_new_brick(state), 120, 15, 10, 10, '#');
+        init_object(get_new_brick(state), 150, 20, 40,  5, '#');
+        init_object(get_new_brick(state), 210, 15, 10, 10, '+');
 
-        init_object(get_new_moving(),  25, 10, 3, 2, 'o');
-        init_object(get_new_moving(),  80, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  25, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  80, 10, 3, 2, 'o');
     }
     if (lvl == 2) {
-        init_object(get_new_brick(),  20, 20, 40,  5, '#');
-        init_object(get_new_brick(),  60, 15, 10, 10, '#');
-        init_object(get_new_brick(),  80, 20, 40,  5, '#');
-        init_object(get_new_brick(), 120, 15, 10, 10, '#');
-        init_object(get_new_brick(), 150, 20, 40,  5, '#');
-        init_object(get_new_brick(), 210, 15, 10, 10, '+');
+        init_object(get_new_brick(state),  20, 20, 40,  5, '#');
+        init_object(get_new_brick(state),  60, 15, 10, 10, '#');
+        init_object(get_new_brick(state),  80, 20, 40,  5, '#');
+        init_object(get_new_brick(state), 120, 15, 10, 10, '#');
+        init_object(get_new_brick(state), 150, 20, 40,  5, '#');
+        init_object(get_new_brick(state), 210, 15, 10, 10, '+');
 
-        init_object(get_new_moving(),  25, 10, 3, 2, 'o');
-        init_object(get_new_moving(),  80, 10, 3, 2, 'o');
-        init_object(get_new_moving(),  65, 10, 3, 2, 'o');
-        init_object(get_new_moving(), 120, 10, 3, 2, 'o');
-        init_object(get_new_moving(), 160, 10, 3, 2, 'o');
-        init_object(get_new_moving(), 175, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  25, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  80, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  65, 10, 3, 2, 'o');
+        init_object(get_new_moving(state), 120, 10, 3, 2, 'o');
+        init_object(get_new_moving(state), 160, 10, 3, 2, 'o');
+        init_object(get_new_moving(state), 175, 10, 3, 2, 'o');
     }
     if (lvl == 3) {
-        init_object(get_new_brick(),  20, 20, 40,  5, '#');
-        init_object(get_new_brick(),  80, 20, 15,  5, '#');
-        init_object(get_new_brick(), 120, 15, 15, 10, '#');
-        init_object(get_new_brick(), 160, 10, 15, 15, '+');
+        init_object(get_new_brick(state),  20, 20, 40,  5, '#');
+        init_object(get_new_brick(state),  80, 20, 15,  5, '#');
+        init_object(get_new_brick(state), 120, 15, 15, 10, '#');
+        init_object(get_new_brick(state), 160, 10, 15, 15, '+');
 
-        init_object(get_new_moving(),  25, 10, 3, 2, 'o');
-        init_object(get_new_moving(),  50, 10, 3, 2, 'o');
-        init_object(get_new_moving(),  80, 10, 3, 2, 'o');
-        init_object(get_new_moving(),  90, 10, 3, 2, 'o');
-        init_object(get_new_moving(), 120, 10, 3, 2, 'o');
-        init_object(get_new_moving(), 130, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  25, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  50, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  80, 10, 3, 2, 'o');
+        init_object(get_new_moving(state),  90, 10, 3, 2, 'o');
+        init_object(get_new_moving(state), 120, 10, 3, 2, 'o');
+        init_object(get_new_moving(state), 130, 10, 3, 2, 'o');
     }
 }
 
 int main() {
+    GameState state = {0};
+    state.max_level = 3;
+    state.level = 1;
+    
     enable_raw_mode();
     atexit(disable_raw_mode);
 
     printf("\033[2J");
-    create_level(level);
+    create_level(&state, state.level);
 
     do {
-        key_a = false;
-        key_d = false;
-        poll_keys();
+        state.key_a = false;
+        state.key_d = false;
+        poll_keys(&state);
 
-        clear_map();
+        clear_map(&state);
 
-        if (!mario.is_fly && key_space) mario.vert_speed = JUMP_SPEED;
-        if (key_a) horizon_move_map( 1.0f);
-        if (key_d) horizon_move_map(-1.0f);
+        if (!state.mario.is_fly && state.key_space) state.mario.vert_speed = JUMP_SPEED;
+        if (state.key_a) horizon_move_map(&state,  1.0f);
+        if (state.key_d) horizon_move_map(&state, -1.0f);
 
-        if (mario.y > mapHeight) player_dead();
+        if (state.mario.y > mapHeight) player_dead(&state);
 
-        vert_move_object(&mario);
-        mario_collision();
+        vert_move_object(&state, &state.mario);
+        mario_collision(&state);
 
-        for (int i = 0; i < brick_count; i++)
-            put_object_on_map(brick[i]);
+        for (int i = 0; i < state.brick_count; i++)
+            put_object_on_map(&state, state.brick[i]);
 
-        for (int i = 0; i < moving_count; i++) {
-            vert_move_object(moving + i);
-            horizon_move_object(moving + i);
-            if (moving[i].y > mapHeight) {
-                delete_moving(i);
+        for (int i = 0; i < state.moving_count; i++) {
+            vert_move_object(&state, state.moving + i);
+            horizon_move_object(&state, state.moving + i);
+            if (state.moving[i].y > mapHeight) {
+                delete_moving(&state, i);
                 i--;
                 continue;
             }
-            put_object_on_map(moving[i]);
+            put_object_on_map(&state, state.moving[i]);
         }
-        put_object_on_map(mario);
-        put_score_on_map();
+        put_object_on_map(&state, state.mario);
+        put_score_on_map(&state);
 
         set_cursor(0, 0);
-        show_map();
+        show_map(&state);
         fflush(stdout);
 
         sleep_ms(10);
 
-    } while (!key_esc);
+    } while (!state.key_esc);
 
-    free(brick);
-    free(moving);
+    free(state.brick);
+    free(state.moving);
     printf("\033[2J\033[H");
     return 0;
 }
