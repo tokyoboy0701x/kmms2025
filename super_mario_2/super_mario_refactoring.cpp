@@ -18,6 +18,15 @@
 #define DEAD_DELAY 500
 #define LEVEL_DELAY 500
 
+#define CHAR_MARIO '@'
+#define CHAR_BRICK '#'
+#define CHAR_QUESTION '?'
+#define CHAR_QUESTION_USED '-'
+#define CHAR_PORTAL '+'
+#define CHAR_ENEMY 'o'
+#define CHAR_COIN '$'
+#define CHAR_EMPTY ' '
+
 typedef struct {
     float x, y;
     float width, height;
@@ -153,7 +162,7 @@ void apply_gravity(Object *obj) {
 
 void clear_map(char map[MAP_HEIGHT][MAP_WIDTH + 1]) {
     for (int i = 0; i < MAP_WIDTH; i++)
-        map[0][i] = ' ';
+        map[0][i] = CHAR_EMPTY;
     map[0][MAP_WIDTH] = '\0';
     for (int j = 1; j < MAP_HEIGHT; j++)
         sprintf(map[j], "%s", map[0]);
@@ -241,7 +250,7 @@ bool mario_collision(Object *mario, Object **moving, int *moving_count, int *sco
         if (!is_collision(*mario, (*moving)[i]))
             continue;
 
-        if ((*moving)[i].type == 'o') {
+        if ((*moving)[i].type == CHAR_ENEMY) {
             if (mario->is_fly && mario->vert_speed > 0 &&
                 mario->y + mario->height < (*moving)[i].y + (*moving)[i].height * 0.5f) {
                 *score += SCORE_ENEMY;
@@ -252,7 +261,7 @@ bool mario_collision(Object *mario, Object **moving, int *moving_count, int *sco
                 return true;
             }
         }
-        if ((*moving)[i].type == '$') {
+        if ((*moving)[i].type == CHAR_COIN) {
             *score += SCORE_COIN;
             delete_moving(moving, moving_count, i);
             i--;
@@ -332,16 +341,16 @@ void check_brick_collision(Object *obj, Object *mario, Object *brick, int brick_
         if (obj->vert_speed > 0)
             obj->is_fly = false;
 
-        if (brick[i].type == '?' && obj->vert_speed < 0 && obj == mario) {
-            brick[i].type = '-';
-            init_object(get_new_moving(moving, moving_count), brick[i].x, brick[i].y - 3, 3, 2, '$');
+        if (brick[i].type == CHAR_QUESTION && obj->vert_speed < 0 && obj == mario) {
+            brick[i].type = CHAR_QUESTION_USED;
+            init_object(get_new_moving(moving, moving_count), brick[i].x, brick[i].y - 3, 3, 2, CHAR_COIN);
             (*moving)[*moving_count - 1].vert_speed = COIN_SPEED;
         }
 
         obj->y -= obj->vert_speed;
         obj->vert_speed = 0;
 
-        if (brick[i].type == '+')
+        if (brick[i].type == CHAR_PORTAL)
             handle_portal(level, max_level, mario, &brick, &brick_count, moving, moving_count, score);
 
         break;
@@ -367,7 +376,7 @@ void horizon_move_object(Object *obj, Object *brick, int brick_count,
             return;
         }
     }
-    if (obj->type == 'o') {
+    if (obj->type == CHAR_ENEMY) {
         Object tmp = *obj;
         vert_move_object(&tmp, mario, brick, brick_count, moving, moving_count, 
                          level, max_level, score);
@@ -385,56 +394,56 @@ void create_level(int lvl, Object *mario, Object **brick, int *brick_count,
     *moving_count = 0;
     *moving = (Object*)realloc(*moving, 0);
     *score  = 0;
-    init_object(mario, 39, 10, 3, 3, '@');
+    init_object(mario, 39, 10, 3, 3, CHAR_MARIO);
 
     switch (lvl) {
         case 1:
-            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
-            init_object(get_new_brick(brick, brick_count),  30, 10,  5,  3, '?');
-            init_object(get_new_brick(brick, brick_count),  50, 10,  5,  3, '?');
-            init_object(get_new_brick(brick, brick_count),  60, 15, 40, 10, '#');
-            init_object(get_new_brick(brick, brick_count),  60,  5, 10,  3, '-');
-            init_object(get_new_brick(brick, brick_count),  70,  5,  5,  3, '?');
-            init_object(get_new_brick(brick, brick_count),  75,  5,  5,  3, '-');
-            init_object(get_new_brick(brick, brick_count),  80,  5,  5,  3, '?');
-            init_object(get_new_brick(brick, brick_count),  85,  5, 10,  3, '?');
-            init_object(get_new_brick(brick, brick_count), 100, 20, 20,  5, '#');
-            init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, '#');
-            init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, '#');
-            init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, '+');
+            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count),  30, 10,  5,  3, CHAR_QUESTION);
+            init_object(get_new_brick(brick, brick_count),  50, 10,  5,  3, CHAR_QUESTION);
+            init_object(get_new_brick(brick, brick_count),  60, 15, 40, 10, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count),  60,  5, 10,  3, CHAR_QUESTION_USED);
+            init_object(get_new_brick(brick, brick_count),  70,  5,  5,  3, CHAR_QUESTION);
+            init_object(get_new_brick(brick, brick_count),  75,  5,  5,  3, CHAR_QUESTION_USED);
+            init_object(get_new_brick(brick, brick_count),  80,  5,  5,  3, CHAR_QUESTION);
+            init_object(get_new_brick(brick, brick_count),  85,  5, 10,  3, CHAR_QUESTION);
+            init_object(get_new_brick(brick, brick_count), 100, 20, 20,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, CHAR_PORTAL);
 
-            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, CHAR_ENEMY);
             break;
             
         case 2:
-            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
-            init_object(get_new_brick(brick, brick_count),  60, 15, 10, 10, '#');
-            init_object(get_new_brick(brick, brick_count),  80, 20, 40,  5, '#');
-            init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, '#');
-            init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, '#');
-            init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, '+');
+            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count),  60, 15, 10, 10, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count),  80, 20, 40,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, CHAR_PORTAL);
 
-            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count),  65, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count), 160, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count), 175, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count),  65, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count), 160, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count), 175, 10, 3, 2, CHAR_ENEMY);
             break;
             
         case 3:
-            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
-            init_object(get_new_brick(brick, brick_count),  80, 20, 15,  5, '#');
-            init_object(get_new_brick(brick, brick_count), 120, 15, 15, 10, '#');
-            init_object(get_new_brick(brick, brick_count), 160, 10, 15, 15, '+');
+            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count),  80, 20, 15,  5, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 120, 15, 15, 10, CHAR_BRICK);
+            init_object(get_new_brick(brick, brick_count), 160, 10, 15, 15, CHAR_PORTAL);
 
-            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count),  50, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count),  90, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, 'o');
-            init_object(get_new_moving(moving, moving_count), 130, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count),  50, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count),  90, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, CHAR_ENEMY);
+            init_object(get_new_moving(moving, moving_count), 130, 10, 3, 2, CHAR_ENEMY);
             break;
             
         default:
