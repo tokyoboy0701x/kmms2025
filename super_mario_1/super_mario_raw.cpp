@@ -67,3 +67,28 @@ void pollKeys() {
         if (c == 'd' || c == 'D') key_d = true;
     }
 }
+
+void setCur(int x, int y) {
+    printf("\033[%d;%dH", y + 1, x + 1);
+}	
+
+void Sleep(int ms) {
+    usleep(ms * 1000);
+}
+
+
+void ClearMap() {
+    for (int i = 0; i < mapWidth; i++)
+        map[0][i] = ' ';
+    map[0][mapWidth] = '\0';
+    for (int j = 1; j < mapHeight; j++)
+        sprintf(map[j], "%s", map[0]);
+}
+
+void ShowMap() {
+    for (int j = 0; j < mapHeight; j++) {
+        map[j][mapWidth] = '\0';
+        printf("%s\n", map[j]);
+    }
+}
+
