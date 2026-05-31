@@ -7,8 +7,8 @@
 #include <fcntl.h>
 #include <string.h>
 
-#define mapWidth     80
-#define mapHeight    25
+#define MAP_WIDTH    80
+#define MAP_HEIGHT   25
 #define GRAVITY      0.05f
 #define JUMP_SPEED  -1.0f
 #define HORIZ_SPEED  0.2f
@@ -28,7 +28,7 @@ typedef struct {
 } Object;
 
 typedef struct {
-    char   map[mapHeight][mapWidth + 1];
+    char   map[MAP_HEIGHT][MAP_WIDTH + 1];
     Object mario;
     Object *brick;
     int    brick_count;
@@ -91,16 +91,16 @@ void sleep_ms(int ms) {
 }
 
 void clear_map(GameState *state) {
-    for (int i = 0; i < mapWidth; i++)
+    for (int i = 0; i < MAP_WIDTH; i++)
         state->map[0][i] = ' ';
-    state->map[0][mapWidth] = '\0';
-    for (int j = 1; j < mapHeight; j++)
+    state->map[0][MAP_WIDTH] = '\0';
+    for (int j = 1; j < MAP_HEIGHT; j++)
         sprintf(state->map[j], "%s", state->map[0]);
 }
 
 void show_map(GameState *state) {
-    for (int j = 0; j < mapHeight; j++) {
-        state->map[j][mapWidth] = '\0';
+    for (int j = 0; j < MAP_HEIGHT; j++) {
+        state->map[j][MAP_WIDTH] = '\0';
         printf("%s\n", state->map[j]);
     }
 }
@@ -127,7 +127,7 @@ bool is_collision(Object o1, Object o2) {
 }
 
 bool is_pos_in_map(int x, int y) {
-    return (x >= 0) && (x < mapWidth) && (y >= 0) && (y < mapHeight);
+    return (x >= 0) && (x < MAP_WIDTH) && (y >= 0) && (y < MAP_HEIGHT);
 }
 
 void put_object_on_map(GameState *state, Object obj) {
@@ -352,7 +352,7 @@ int main() {
         if (state.key_a) horizon_move_map(&state,  1.0f);
         if (state.key_d) horizon_move_map(&state, -1.0f);
 
-        if (state.mario.y > mapHeight) player_dead(&state);
+        if (state.mario.y > MAP_HEIGHT) player_dead(&state);
 
         vert_move_object(&state, &state.mario);
         mario_collision(&state);
@@ -363,7 +363,7 @@ int main() {
         for (int i = 0; i < state.moving_count; i++) {
             vert_move_object(&state, state.moving + i);
             horizon_move_object(&state, state.moving + i);
-            if (state.moving[i].y > mapHeight) {
+            if (state.moving[i].y > MAP_HEIGHT) {
                 delete_moving(&state, i);
                 i--;
                 continue;
