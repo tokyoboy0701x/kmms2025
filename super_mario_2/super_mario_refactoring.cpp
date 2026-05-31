@@ -381,56 +381,63 @@ void horizon_move_object(Object *obj, Object *brick, int brick_count,
 void create_level(int lvl, Object *mario, Object **brick, int *brick_count, 
                   Object **moving, int *moving_count, int *score) {
     *brick_count  = 0;
-    *brick  = (Object*)realloc(*brick,  0);
+    *brick  = (Object*)realloc(*brick, 0);
     *moving_count = 0;
     *moving = (Object*)realloc(*moving, 0);
     *score  = 0;
     init_object(mario, 39, 10, 3, 3, '@');
 
-    if (lvl == 1) {
-        init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
-        init_object(get_new_brick(brick, brick_count),  30, 10,  5,  3, '?');
-        init_object(get_new_brick(brick, brick_count),  50, 10,  5,  3, '?');
-        init_object(get_new_brick(brick, brick_count),  60, 15, 40, 10, '#');
-        init_object(get_new_brick(brick, brick_count),  60,  5, 10,  3, '-');
-        init_object(get_new_brick(brick, brick_count),  70,  5,  5,  3, '?');
-        init_object(get_new_brick(brick, brick_count),  75,  5,  5,  3, '-');
-        init_object(get_new_brick(brick, brick_count),  80,  5,  5,  3, '?');
-        init_object(get_new_brick(brick, brick_count),  85,  5, 10,  3, '?');
-        init_object(get_new_brick(brick, brick_count), 100, 20, 20,  5, '#');
-        init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, '#');
-        init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, '#');
-        init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, '+');
+    switch (lvl) {
+        case 1:
+            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
+            init_object(get_new_brick(brick, brick_count),  30, 10,  5,  3, '?');
+            init_object(get_new_brick(brick, brick_count),  50, 10,  5,  3, '?');
+            init_object(get_new_brick(brick, brick_count),  60, 15, 40, 10, '#');
+            init_object(get_new_brick(brick, brick_count),  60,  5, 10,  3, '-');
+            init_object(get_new_brick(brick, brick_count),  70,  5,  5,  3, '?');
+            init_object(get_new_brick(brick, brick_count),  75,  5,  5,  3, '-');
+            init_object(get_new_brick(brick, brick_count),  80,  5,  5,  3, '?');
+            init_object(get_new_brick(brick, brick_count),  85,  5, 10,  3, '?');
+            init_object(get_new_brick(brick, brick_count), 100, 20, 20,  5, '#');
+            init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, '#');
+            init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, '#');
+            init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, '+');
 
-        init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
-    }
-    if (lvl == 2) {
-        init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
-        init_object(get_new_brick(brick, brick_count),  60, 15, 10, 10, '#');
-        init_object(get_new_brick(brick, brick_count),  80, 20, 40,  5, '#');
-        init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, '#');
-        init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, '#');
-        init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, '+');
+            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
+            break;
+            
+        case 2:
+            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
+            init_object(get_new_brick(brick, brick_count),  60, 15, 10, 10, '#');
+            init_object(get_new_brick(brick, brick_count),  80, 20, 40,  5, '#');
+            init_object(get_new_brick(brick, brick_count), 120, 15, 10, 10, '#');
+            init_object(get_new_brick(brick, brick_count), 150, 20, 40,  5, '#');
+            init_object(get_new_brick(brick, brick_count), 210, 15, 10, 10, '+');
 
-        init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count),  65, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count), 160, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count), 175, 10, 3, 2, 'o');
-    }
-    if (lvl == 3) {
-        init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
-        init_object(get_new_brick(brick, brick_count),  80, 20, 15,  5, '#');
-        init_object(get_new_brick(brick, brick_count), 120, 15, 15, 10, '#');
-        init_object(get_new_brick(brick, brick_count), 160, 10, 15, 15, '+');
+            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  65, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count), 160, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count), 175, 10, 3, 2, 'o');
+            break;
+            
+        case 3:
+            init_object(get_new_brick(brick, brick_count),  20, 20, 40,  5, '#');
+            init_object(get_new_brick(brick, brick_count),  80, 20, 15,  5, '#');
+            init_object(get_new_brick(brick, brick_count), 120, 15, 15, 10, '#');
+            init_object(get_new_brick(brick, brick_count), 160, 10, 15, 15, '+');
 
-        init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count),  50, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count),  90, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, 'o');
-        init_object(get_new_moving(moving, moving_count), 130, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  25, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  50, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  80, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count),  90, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count), 120, 10, 3, 2, 'o');
+            init_object(get_new_moving(moving, moving_count), 130, 10, 3, 2, 'o');
+            break;
+            
+        default:
+            break;
     }
 }
